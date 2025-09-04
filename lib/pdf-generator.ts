@@ -33,7 +33,7 @@ interface CVData {
   skills: string[]
 }
 
-export function generatePDF(cvData: CVData): void {
+export function generatePDF(cvData: CVData, template = "modern-with-photo"): void {
   const doc = new jsPDF()
   const pageWidth = doc.internal.pageSize.getWidth()
   const margin = 20
@@ -59,23 +59,53 @@ export function generatePDF(cvData: CVData): void {
   const headerStartY = yPosition
   let nameStartX = margin
 
-  // Add profile photo if available
-  if (cvData.personalInfo.profilePhoto) {
+  const templatesWithPhoto = ["modern-with-photo", "minimal-with-photo"]
+  if (cvData.personalInfo.profilePhoto && templatesWithPhoto.includes(template)) {
     try {
-      const photoSize = 30 // Photo size in PDF units
-      doc.addImage(cvData.personalInfo.profilePhoto, "JPEG", margin, yPosition, photoSize, photoSize)
-      nameStartX = margin + photoSize + 10 // Adjust name position to account for photo
+      const photoSize = template === "minimal-with-photo" ? 20 : 30 // Smaller photo for minimal template
+      const photoX = template === "minimal-with-photo" ? pageWidth - margin - photoSize : margin
+      const photoY = yPosition
+      const radius = photoSize / 2
+      const centerX = photoX + radius
+      const centerY = photoY + radius
+
+      doc.saveGraphicsState()
+
+      doc.circle(centerX, centerY, radius)
+      doc.clip()
+
+      doc.addImage(cvData.personalInfo.profilePhoto, "JPEG", photoX, photoY, photoSize, photoSize)
+
+      doc.restoreGraphicsState()
+
+      if (template !== "minimal-with-photo") {
+        nameStartX = margin + photoSize + 10 // Adjust name position for modern template
+      }
     } catch (error) {
       console.log("[v0] Error adding profile photo to PDF:", error)
-      // Continue without photo if there's an error
     }
   }
 
-  // Name and title
   if (cvData.personalInfo.fullName) {
-    doc.setFontSize(24)
-    doc.setFont("helvetica", "bold")
-    doc.text(cvData.personalInfo.fullName, nameStartX, yPosition + 15)
+    if (template === "executive-no-photo") {
+      doc.setFontSize(20)
+      doc.setFont("helvetica", "bold")
+      doc.text(cvData.personalInfo.fullName.toUpperCase(), nameStartX, yPosition + 15)
+    } else if (template === "minimal-with-photo") {
+      doc.setFontSize(18)
+      doc.setFont("helvetica", "normal")
+      doc.text(cvData.personalInfo.fullName, nameStartX, yPosition + 15)
+    } else if (template === "classic-no-photo") {
+      doc.setFontSize(24)
+      doc.setFont("helvetica", "bold")
+      const textWidth = doc.getTextWidth(cvData.personalInfo.fullName)
+      doc.text(cvData.personalInfo.fullName, (pageWidth - textWidth) / 2, yPosition + 15)
+      nameStartX = margin // Reset for contact info centering
+    } else {
+      doc.setFontSize(24)
+      doc.setFont("helvetica", "bold")
+      doc.text(cvData.personalInfo.fullName, nameStartX, yPosition + 15)
+    }
     yPosition += 15
   }
 
@@ -93,14 +123,24 @@ export function generatePDF(cvData: CVData): void {
   if (contactInfo.length > 0) {
     doc.setFontSize(10)
     doc.setFont("helvetica", "normal")
-    doc.text(contactInfo.join(" | "), nameStartX, yPosition)
+
+    if (template === "classic-no-photo") {
+      const contactText = contactInfo.join(" | ")
+      const textWidth = doc.getTextWidth(contactText)
+      doc.text(contactText, (pageWidth - textWidth) / 2, yPosition)
+    } else {
+      doc.text(contactInfo.join(" | "), nameStartX, yPosition)
+    }
     yPosition += 10
   }
 
-  // Add separator line
   if (cvData.personalInfo.fullName || contactInfo.length > 0) {
-    doc.setDrawColor(5, 150, 105) // Primary color from design
-    doc.setLineWidth(0.5)
+    doc.setDrawColor(5, 150, 105)
+    if (template === "executive-no-photo") {
+      doc.setLineWidth(2) // Thicker line for executive template
+    } else {
+      doc.setLineWidth(0.5)
+    }
     doc.line(margin, yPosition, pageWidth - margin, yPosition)
     yPosition += 15
   }
@@ -109,7 +149,20 @@ export function generatePDF(cvData: CVData): void {
   if (cvData.personalInfo.summary) {
     doc.setFontSize(14)
     doc.setFont("helvetica", "bold")
-    doc.text("Professional Summary", margin, yPosition)
+
+    const summaryTitle =
+      template === "executive-no-photo"
+        ? "EXECUTIVE SUMMARY"
+        : template === "minimal-with-photo"
+          ? "SUMMARY"
+          : "Professional Summary"
+
+    if (template === "classic-no-photo") {
+      const titleWidth = doc.getTextWidth(summaryTitle)
+      doc.text(summaryTitle, (pageWidth - titleWidth) / 2, yPosition)
+    } else {
+      doc.text(summaryTitle, margin, yPosition)
+    }
     yPosition += 8
 
     doc.setFont("helvetica", "normal")
