@@ -76,6 +76,10 @@ export function CVPreview({ cvData, template = "modern-with-photo" }: CVPreviewP
       return <MinimalTemplate cvData={cvData} formatDate={formatDate} />
     case "executive-no-photo":
       return <ExecutiveTemplate cvData={cvData} formatDate={formatDate} />
+    case "creative-portfolio":
+      return <CreativePortfolioTemplate cvData={cvData} formatDate={formatDate} />
+    case "technical-resume":
+      return <TechnicalResumeTemplate cvData={cvData} formatDate={formatDate} />
     default:
       return <ModernTemplate cvData={cvData} formatDate={formatDate} />
   }
@@ -434,7 +438,7 @@ function ExecutiveTemplate({ cvData, formatDate }: { cvData: CVData; formatDate:
             <h2 className="text-lg font-bold text-foreground mb-4 uppercase tracking-wide">Professional Experience</h2>
             <div className="space-y-5">
               {cvData.experience.map((exp) => (
-                <div key={exp.id} className="bg-muted/30 p-4 rounded">
+                <div key={exp.id} className="bg-muted/30 p-4 rounded border-l-2 border-primary">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <h3 className="font-bold text-foreground text-lg">{exp.position || "Position Title"}</h3>
@@ -489,6 +493,243 @@ function ExecutiveTemplate({ cvData, formatDate }: { cvData: CVData; formatDate:
               {cvData.skills.map((skill) => (
                 <div key={skill} className="bg-primary/10 px-3 py-1 rounded text-sm font-medium text-foreground">
                   {skill}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function CreativePortfolioTemplate({ cvData, formatDate }: { cvData: CVData; formatDate: (date: string) => string }) {
+  return (
+    <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
+      <div className="p-8 space-y-6">
+        {/* Header Section - Creative with Large Photo */}
+        {(cvData.personalInfo.fullName || cvData.personalInfo.email) && (
+          <div className="text-center border-b pb-6">
+            {cvData.personalInfo.profilePhoto && (
+              <div className="mb-6">
+                <img
+                  src={cvData.personalInfo.profilePhoto || "/placeholder.svg"}
+                  alt="Profile"
+                  className="w-32 h-32 rounded-lg object-cover border-4 border-accent mx-auto shadow-lg"
+                />
+              </div>
+            )}
+            <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              {cvData.personalInfo.fullName || "Your Name"}
+            </h1>
+            <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
+              {cvData.personalInfo.email && (
+                <div className="flex items-center gap-2 bg-muted px-3 py-1 rounded-full">
+                  <Mail className="h-4 w-4" />
+                  {cvData.personalInfo.email}
+                </div>
+              )}
+              {cvData.personalInfo.phone && (
+                <div className="flex items-center gap-2 bg-muted px-3 py-1 rounded-full">
+                  <Phone className="h-4 w-4" />
+                  {cvData.personalInfo.phone}
+                </div>
+              )}
+              {cvData.personalInfo.location && (
+                <div className="flex items-center gap-2 bg-muted px-3 py-1 rounded-full">
+                  <MapPin className="h-4 w-4" />
+                  {cvData.personalInfo.location}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Creative Summary */}
+        {cvData.personalInfo.summary && (
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-foreground mb-4">About Me</h2>
+            <p className="text-card-foreground leading-relaxed text-lg max-w-2xl mx-auto font-light">
+              {cvData.personalInfo.summary}
+            </p>
+          </div>
+        )}
+
+        {/* Experience - Creative Layout */}
+        {cvData.experience.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-6 text-center">Experience</h2>
+            <div className="space-y-6">
+              {cvData.experience.map((exp, index) => (
+                <div key={exp.id} className={`relative ${index % 2 === 0 ? "text-left" : "text-right"}`}>
+                  <div className="bg-gradient-to-r from-primary/10 to-accent/10 p-6 rounded-xl">
+                    <h3 className="font-bold text-foreground text-xl mb-2">{exp.position || "Position Title"}</h3>
+                    <p className="font-semibold text-primary text-lg mb-2">{exp.company || "Company Name"}</p>
+                    {(exp.startDate || exp.endDate) && (
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground mb-3 justify-center">
+                        <Calendar className="h-4 w-4" />
+                        {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
+                      </div>
+                    )}
+                    {exp.description && <p className="text-card-foreground leading-relaxed">{exp.description}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Education */}
+        {cvData.education.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-6 text-center">Education</h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              {cvData.education.map((edu) => (
+                <div key={edu.id} className="bg-muted/50 p-4 rounded-lg text-center">
+                  <h3 className="font-bold text-foreground mb-1">
+                    {edu.degree || "Degree"} {edu.field && `in ${edu.field}`}
+                  </h3>
+                  <p className="font-medium text-secondary mb-1">{edu.institution || "Institution Name"}</p>
+                  {edu.graduationYear && <p className="text-sm text-muted-foreground">{edu.graduationYear}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Skills - Creative Grid */}
+        {cvData.skills.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-6 text-center">Skills</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {cvData.skills.map((skill, index) => (
+                <div
+                  key={skill}
+                  className={`p-3 rounded-lg text-center font-medium ${
+                    index % 3 === 0
+                      ? "bg-primary text-primary-foreground"
+                      : index % 3 === 1
+                        ? "bg-accent text-accent-foreground"
+                        : "bg-secondary text-secondary-foreground"
+                  }`}
+                >
+                  {skill}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function TechnicalResumeTemplate({ cvData, formatDate }: { cvData: CVData; formatDate: (date: string) => string }) {
+  return (
+    <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
+      <div className="p-8 space-y-6">
+        {/* Header Section - Technical */}
+        {(cvData.personalInfo.fullName || cvData.personalInfo.email) && (
+          <div className="border-l-4 border-primary pl-6">
+            <h1 className="text-3xl font-mono font-bold text-foreground mb-2">
+              {cvData.personalInfo.fullName || "Your Name"}
+            </h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground font-mono">
+              {cvData.personalInfo.email && (
+                <div className="flex items-center gap-2">
+                  <span className="text-primary">email:</span>
+                  {cvData.personalInfo.email}
+                </div>
+              )}
+              {cvData.personalInfo.phone && (
+                <div className="flex items-center gap-2">
+                  <span className="text-primary">phone:</span>
+                  {cvData.personalInfo.phone}
+                </div>
+              )}
+              {cvData.personalInfo.location && (
+                <div className="flex items-center gap-2">
+                  <span className="text-primary">location:</span>
+                  {cvData.personalInfo.location}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Summary */}
+        {cvData.personalInfo.summary && (
+          <div>
+            <h2 className="text-lg font-mono font-bold text-foreground mb-3 border-b border-muted pb-1">Summary</h2>
+            <p className="text-card-foreground leading-relaxed font-mono text-sm">{cvData.personalInfo.summary}</p>
+          </div>
+        )}
+
+        {/* Skills Matrix */}
+        {cvData.skills.length > 0 && (
+          <div>
+            <h2 className="text-lg font-mono font-bold text-foreground mb-3 border-b border-muted pb-1">
+              Technical Skills
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {cvData.skills.map((skill) => (
+                <div key={skill} className="bg-muted/50 px-3 py-2 rounded font-mono text-sm text-center border">
+                  {skill}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Experience - Technical Format */}
+        {cvData.experience.length > 0 && (
+          <div>
+            <h2 className="text-lg font-mono font-bold text-foreground mb-3 border-b border-muted pb-1">
+              Work Experience
+            </h2>
+            <div className="space-y-4">
+              {cvData.experience.map((exp) => (
+                <div key={exp.id} className="bg-muted/30 p-4 rounded border-l-2 border-primary">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="font-mono font-bold text-foreground">{exp.position || "Position Title"}</h3>
+                      <p className="font-mono text-primary text-sm">@ {exp.company || "Company Name"}</p>
+                    </div>
+                    {(exp.startDate || exp.endDate) && (
+                      <div className="text-xs font-mono text-muted-foreground bg-muted px-2 py-1 rounded">
+                        {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
+                      </div>
+                    )}
+                  </div>
+                  {exp.description && (
+                    <div className="mt-3">
+                      <p className="text-card-foreground text-sm leading-relaxed font-mono">{exp.description}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Education */}
+        {cvData.education.length > 0 && (
+          <div>
+            <h2 className="text-lg font-mono font-bold text-foreground mb-3 border-b border-muted pb-1">Education</h2>
+            <div className="space-y-3">
+              {cvData.education.map((edu) => (
+                <div key={edu.id} className="flex justify-between items-center bg-muted/30 p-3 rounded">
+                  <div>
+                    <h3 className="font-mono font-semibold text-foreground text-sm">
+                      {edu.degree || "Degree"} {edu.field && `in ${edu.field}`}
+                    </h3>
+                    <p className="font-mono text-secondary text-sm">{edu.institution || "Institution Name"}</p>
+                  </div>
+                  {edu.graduationYear && (
+                    <div className="text-xs font-mono text-muted-foreground bg-muted px-2 py-1 rounded">
+                      {edu.graduationYear}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

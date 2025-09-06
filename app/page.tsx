@@ -114,6 +114,54 @@ const templates: Template[] = [
       </div>
     ),
   },
+  {
+    id: "creative-portfolio",
+    name: "Creative Portfolio",
+    description: "Bold design for creative professionals with visual emphasis",
+    features: ["Large Photo", "Creative Layout", "Portfolio Focus", "Visual Impact"],
+    hasPhoto: true,
+    style: "modern",
+    preview: (
+      <div className="bg-white p-4 rounded border text-xs space-y-2">
+        <div className="flex flex-col items-center text-center space-y-2">
+          <div className="w-10 h-10 bg-accent rounded-lg"></div>
+          <div className="space-y-1">
+            <div className="h-2 bg-foreground rounded w-16 mx-auto"></div>
+            <div className="h-1 bg-muted-foreground rounded w-12 mx-auto"></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-1">
+          <div className="h-1 bg-muted-foreground rounded"></div>
+          <div className="h-1 bg-muted-foreground rounded"></div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "technical-resume",
+    name: "Technical Professional",
+    description: "Clean layout optimized for developers and technical roles",
+    features: ["No Photo", "Skills Matrix", "Project Focus", "Technical Layout"],
+    hasPhoto: false,
+    style: "minimal",
+    preview: (
+      <div className="bg-white p-4 rounded border text-xs space-y-2">
+        <div className="space-y-1">
+          <div className="h-2 bg-foreground rounded w-16"></div>
+          <div className="h-1 bg-muted-foreground rounded w-12"></div>
+        </div>
+        <div className="grid grid-cols-3 gap-1">
+          <div className="h-1 bg-accent rounded"></div>
+          <div className="h-1 bg-accent rounded"></div>
+          <div className="h-1 bg-accent rounded"></div>
+        </div>
+        <div className="space-y-1">
+          <div className="h-1.5 bg-foreground rounded w-12"></div>
+          <div className="h-1 bg-muted-foreground rounded w-full"></div>
+        </div>
+      </div>
+    ),
+  },
 ]
 
 export default function TemplateSelection() {
@@ -180,6 +228,9 @@ export default function TemplateSelection() {
             </Badge>
             <Badge variant="outline" className="cursor-pointer hover:bg-accent hover:text-accent-foreground">
               Classic
+            </Badge>
+            <Badge variant="outline" className="cursor-pointer hover:bg-accent hover:text-accent-foreground">
+              Minimal
             </Badge>
           </div>
         </div>
