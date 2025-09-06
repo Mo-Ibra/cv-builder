@@ -1,56 +1,56 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { Plus, X, FileText, Download, ArrowLeft } from "lucide-react"
-import { CVPreview } from "@/components/cv-preview"
-import { generatePDF } from "@/lib/pdf-generator"
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Plus, X, FileText, Download, ArrowLeft } from "lucide-react";
+import { CVPreview } from "@/components/cv-preview";
+import { generatePDF } from "@/lib/pdf-generator";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 interface PersonalInfo {
-  fullName: string
-  email: string
-  phone: string
-  location: string
-  summary: string
-  profilePhoto?: string
+  fullName: string;
+  email: string;
+  phone: string;
+  location: string;
+  summary: string;
+  profilePhoto?: string;
 }
 
 interface Experience {
-  id: string
-  company: string
-  position: string
-  startDate: string
-  endDate: string
-  description: string
+  id: string;
+  company: string;
+  position: string;
+  startDate: string;
+  endDate: string;
+  description: string;
 }
 
 interface Education {
-  id: string
-  institution: string
-  degree: string
-  field: string
-  graduationYear: string
+  id: string;
+  institution: string;
+  degree: string;
+  field: string;
+  graduationYear: string;
 }
 
 interface CVData {
-  personalInfo: PersonalInfo
-  experience: Experience[]
-  education: Education[]
-  skills: string[]
+  personalInfo: PersonalInfo;
+  experience: Experience[];
+  education: Education[];
+  skills: string[];
 }
 
 export default function CVBuilder() {
-  const searchParams = useSearchParams()
-  const selectedTemplate = searchParams.get("template") || "modern-with-photo"
+  const searchParams = useSearchParams();
+  const selectedTemplate = searchParams.get("template") || "modern-with-photo";
 
   const [cvData, setCvData] = useState<CVData>({
     personalInfo: {
@@ -63,22 +63,22 @@ export default function CVBuilder() {
     experience: [],
     education: [],
     skills: [],
-  })
+  });
 
-  const [newSkill, setNewSkill] = useState("")
-  const [showPhotoField, setShowPhotoField] = useState(true)
+  const [newSkill, setNewSkill] = useState("");
+  const [showPhotoField, setShowPhotoField] = useState(true);
 
   useEffect(() => {
-    const templatesWithPhoto = ["modern-with-photo", "minimal-with-photo"]
-    setShowPhotoField(templatesWithPhoto.includes(selectedTemplate))
-  }, [selectedTemplate])
+    const templatesWithPhoto = ["modern-with-photo", "minimal-with-photo"];
+    setShowPhotoField(templatesWithPhoto.includes(selectedTemplate));
+  }, [selectedTemplate]);
 
   const updatePersonalInfo = (field: keyof PersonalInfo, value: string) => {
     setCvData((prev) => ({
       ...prev,
       personalInfo: { ...prev.personalInfo, [field]: value },
-    }))
-  }
+    }));
+  };
 
   const addExperience = () => {
     const newExp: Experience = {
@@ -88,26 +88,32 @@ export default function CVBuilder() {
       startDate: "",
       endDate: "",
       description: "",
-    }
+    };
     setCvData((prev) => ({
       ...prev,
       experience: [...prev.experience, newExp],
-    }))
-  }
+    }));
+  };
 
-  const updateExperience = (id: string, field: keyof Omit<Experience, "id">, value: string) => {
+  const updateExperience = (
+    id: string,
+    field: keyof Omit<Experience, "id">,
+    value: string
+  ) => {
     setCvData((prev) => ({
       ...prev,
-      experience: prev.experience.map((exp) => (exp.id === id ? { ...exp, [field]: value } : exp)),
-    }))
-  }
+      experience: prev.experience.map((exp) =>
+        exp.id === id ? { ...exp, [field]: value } : exp
+      ),
+    }));
+  };
 
   const removeExperience = (id: string) => {
     setCvData((prev) => ({
       ...prev,
       experience: prev.experience.filter((exp) => exp.id !== id),
-    }))
-  }
+    }));
+  };
 
   const addEducation = () => {
     const newEdu: Education = {
@@ -116,63 +122,69 @@ export default function CVBuilder() {
       degree: "",
       field: "",
       graduationYear: "",
-    }
+    };
     setCvData((prev) => ({
       ...prev,
       education: [...prev.education, newEdu],
-    }))
-  }
+    }));
+  };
 
-  const updateEducation = (id: string, field: keyof Omit<Education, "id">, value: string) => {
+  const updateEducation = (
+    id: string,
+    field: keyof Omit<Education, "id">,
+    value: string
+  ) => {
     setCvData((prev) => ({
       ...prev,
-      education: prev.education.map((edu) => (edu.id === id ? { ...edu, [field]: value } : edu)),
-    }))
-  }
+      education: prev.education.map((edu) =>
+        edu.id === id ? { ...edu, [field]: value } : edu
+      ),
+    }));
+  };
 
   const removeEducation = (id: string) => {
     setCvData((prev) => ({
       ...prev,
       education: prev.education.filter((edu) => edu.id !== id),
-    }))
-  }
+    }));
+  };
 
   const addSkill = () => {
     if (newSkill.trim() && !cvData.skills.includes(newSkill.trim())) {
       setCvData((prev) => ({
         ...prev,
         skills: [...prev.skills, newSkill.trim()],
-      }))
-      setNewSkill("")
+      }));
+      setNewSkill("");
     }
-  }
+  };
 
   const removeSkill = (skill: string) => {
     setCvData((prev) => ({
       ...prev,
       skills: prev.skills.filter((s) => s !== skill),
-    }))
-  }
+    }));
+  };
 
   const handleDownloadPDF = () => {
-    generatePDF(cvData, selectedTemplate)
-  }
+    generatePDF(cvData, selectedTemplate);
+  };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
-        const result = e.target?.result as string
-        updatePersonalInfo("profilePhoto", result)
-      }
-      reader.readAsDataURL(file)
+        const result = e.target?.result as string;
+        updatePersonalInfo("profilePhoto", result);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
   const removeProfilePhoto = () => {
-    updatePersonalInfo("profilePhoto", "")
-  }
+    updatePersonalInfo("profilePhoto", "");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -187,7 +199,10 @@ export default function CVBuilder() {
           <div>
             <h1 className="text-4xl font-bold text-foreground">CV Builder</h1>
             <p className="text-muted-foreground">
-              Template: {selectedTemplate.replace("-", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+              Template:{" "}
+              {selectedTemplate
+                .replace("-", " ")
+                .replace(/\b\w/g, (l) => l.toUpperCase())}
             </p>
           </div>
         </div>
@@ -211,7 +226,10 @@ export default function CVBuilder() {
                       {cvData.personalInfo.profilePhoto ? (
                         <div className="relative">
                           <img
-                            src={cvData.personalInfo.profilePhoto || "/placeholder.svg"}
+                            src={
+                              cvData.personalInfo.profilePhoto ||
+                              "/placeholder.svg"
+                            }
                             alt="Profile"
                             className="w-20 h-20 rounded-full object-cover border-2 border-border"
                           />
@@ -242,9 +260,13 @@ export default function CVBuilder() {
                         htmlFor="profilePhoto"
                         className="cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
                       >
-                        {cvData.personalInfo.profilePhoto ? "Change Photo" : "Upload Photo"}
+                        {cvData.personalInfo.profilePhoto
+                          ? "Change Photo"
+                          : "Upload Photo"}
                       </Label>
-                      <p className="text-xs text-muted-foreground mt-1">Recommended: Square image, max 2MB</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Recommended: Square image, max 2MB
+                      </p>
                     </div>
                   </div>
                 )}
@@ -255,7 +277,9 @@ export default function CVBuilder() {
                     <Input
                       id="fullName"
                       value={cvData.personalInfo.fullName}
-                      onChange={(e) => updatePersonalInfo("fullName", e.target.value)}
+                      onChange={(e) =>
+                        updatePersonalInfo("fullName", e.target.value)
+                      }
                       placeholder="John Doe"
                     />
                   </div>
@@ -265,7 +289,9 @@ export default function CVBuilder() {
                       id="email"
                       type="email"
                       value={cvData.personalInfo.email}
-                      onChange={(e) => updatePersonalInfo("email", e.target.value)}
+                      onChange={(e) =>
+                        updatePersonalInfo("email", e.target.value)
+                      }
                       placeholder="john@example.com"
                     />
                   </div>
@@ -274,7 +300,9 @@ export default function CVBuilder() {
                     <Input
                       id="phone"
                       value={cvData.personalInfo.phone}
-                      onChange={(e) => updatePersonalInfo("phone", e.target.value)}
+                      onChange={(e) =>
+                        updatePersonalInfo("phone", e.target.value)
+                      }
                       placeholder="+1 (555) 123-4567"
                     />
                   </div>
@@ -283,7 +311,9 @@ export default function CVBuilder() {
                     <Input
                       id="location"
                       value={cvData.personalInfo.location}
-                      onChange={(e) => updatePersonalInfo("location", e.target.value)}
+                      onChange={(e) =>
+                        updatePersonalInfo("location", e.target.value)
+                      }
                       placeholder="New York, NY"
                     />
                   </div>
@@ -293,7 +323,9 @@ export default function CVBuilder() {
                   <Textarea
                     id="summary"
                     value={cvData.personalInfo.summary}
-                    onChange={(e) => updatePersonalInfo("summary", e.target.value)}
+                    onChange={(e) =>
+                      updatePersonalInfo("summary", e.target.value)
+                    }
                     placeholder="Brief description of your professional background and goals..."
                     rows={4}
                   />
@@ -317,7 +349,11 @@ export default function CVBuilder() {
                   <div key={exp.id} className="border rounded-lg p-4 space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium">Experience {index + 1}</h4>
-                      <Button variant="ghost" size="sm" onClick={() => removeExperience(exp.id)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeExperience(exp.id)}
+                      >
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
@@ -326,7 +362,9 @@ export default function CVBuilder() {
                         <Label>Company</Label>
                         <Input
                           value={exp.company}
-                          onChange={(e) => updateExperience(exp.id, "company", e.target.value)}
+                          onChange={(e) =>
+                            updateExperience(exp.id, "company", e.target.value)
+                          }
                           placeholder="Company Name"
                         />
                       </div>
@@ -334,7 +372,9 @@ export default function CVBuilder() {
                         <Label>Position</Label>
                         <Input
                           value={exp.position}
-                          onChange={(e) => updateExperience(exp.id, "position", e.target.value)}
+                          onChange={(e) =>
+                            updateExperience(exp.id, "position", e.target.value)
+                          }
                           placeholder="Job Title"
                         />
                       </div>
@@ -343,7 +383,13 @@ export default function CVBuilder() {
                         <Input
                           type="month"
                           value={exp.startDate}
-                          onChange={(e) => updateExperience(exp.id, "startDate", e.target.value)}
+                          onChange={(e) =>
+                            updateExperience(
+                              exp.id,
+                              "startDate",
+                              e.target.value
+                            )
+                          }
                         />
                       </div>
                       <div>
@@ -351,7 +397,9 @@ export default function CVBuilder() {
                         <Input
                           type="month"
                           value={exp.endDate}
-                          onChange={(e) => updateExperience(exp.id, "endDate", e.target.value)}
+                          onChange={(e) =>
+                            updateExperience(exp.id, "endDate", e.target.value)
+                          }
                           placeholder="Leave empty if current"
                         />
                       </div>
@@ -360,7 +408,13 @@ export default function CVBuilder() {
                       <Label>Description</Label>
                       <Textarea
                         value={exp.description}
-                        onChange={(e) => updateExperience(exp.id, "description", e.target.value)}
+                        onChange={(e) =>
+                          updateExperience(
+                            exp.id,
+                            "description",
+                            e.target.value
+                          )
+                        }
                         placeholder="Describe your responsibilities and achievements..."
                         rows={3}
                       />
@@ -369,7 +423,8 @@ export default function CVBuilder() {
                 ))}
                 {cvData.experience.length === 0 && (
                   <p className="text-muted-foreground text-center py-4">
-                    No work experience added yet. Click "Add Experience" to get started.
+                    No work experience added yet. Click "Add Experience" to get
+                    started.
                   </p>
                 )}
               </CardContent>
@@ -391,7 +446,11 @@ export default function CVBuilder() {
                   <div key={edu.id} className="border rounded-lg p-4 space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium">Education {index + 1}</h4>
-                      <Button variant="ghost" size="sm" onClick={() => removeEducation(edu.id)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeEducation(edu.id)}
+                      >
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
@@ -400,7 +459,13 @@ export default function CVBuilder() {
                         <Label>Institution</Label>
                         <Input
                           value={edu.institution}
-                          onChange={(e) => updateEducation(edu.id, "institution", e.target.value)}
+                          onChange={(e) =>
+                            updateEducation(
+                              edu.id,
+                              "institution",
+                              e.target.value
+                            )
+                          }
                           placeholder="University Name"
                         />
                       </div>
@@ -408,7 +473,9 @@ export default function CVBuilder() {
                         <Label>Degree</Label>
                         <Input
                           value={edu.degree}
-                          onChange={(e) => updateEducation(edu.id, "degree", e.target.value)}
+                          onChange={(e) =>
+                            updateEducation(edu.id, "degree", e.target.value)
+                          }
                           placeholder="Bachelor's, Master's, etc."
                         />
                       </div>
@@ -416,7 +483,9 @@ export default function CVBuilder() {
                         <Label>Field of Study</Label>
                         <Input
                           value={edu.field}
-                          onChange={(e) => updateEducation(edu.id, "field", e.target.value)}
+                          onChange={(e) =>
+                            updateEducation(edu.id, "field", e.target.value)
+                          }
                           placeholder="Computer Science, Business, etc."
                         />
                       </div>
@@ -425,7 +494,13 @@ export default function CVBuilder() {
                         <Input
                           type="number"
                           value={edu.graduationYear}
-                          onChange={(e) => updateEducation(edu.id, "graduationYear", e.target.value)}
+                          onChange={(e) =>
+                            updateEducation(
+                              edu.id,
+                              "graduationYear",
+                              e.target.value
+                            )
+                          }
                           placeholder="2023"
                         />
                       </div>
@@ -434,7 +509,8 @@ export default function CVBuilder() {
                 ))}
                 {cvData.education.length === 0 && (
                   <p className="text-muted-foreground text-center py-4">
-                    No education added yet. Click "Add Education" to get started.
+                    No education added yet. Click "Add Education" to get
+                    started.
                   </p>
                 )}
               </CardContent>
@@ -457,9 +533,16 @@ export default function CVBuilder() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {cvData.skills.map((skill) => (
-                    <Badge key={skill} variant="secondary" className="flex items-center gap-1">
+                    <Badge
+                      key={skill}
+                      variant="secondary"
+                      className="flex items-center gap-1"
+                    >
                       {skill}
-                      <X className="h-3 w-3 cursor-pointer" onClick={() => removeSkill(skill)} />
+                      <X
+                        className="h-3 w-3 cursor-pointer"
+                        onClick={() => removeSkill(skill)}
+                      />
                     </Badge>
                   ))}
                 </div>
@@ -478,7 +561,11 @@ export default function CVBuilder() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>CV Preview</CardTitle>
-                  <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDownloadPDF}
+                  >
                     <Download className="h-4 w-4 mr-2" />
                     Download PDF
                   </Button>
@@ -492,5 +579,5 @@ export default function CVBuilder() {
         </div>
       </div>
     </div>
-  )
+  );
 }
